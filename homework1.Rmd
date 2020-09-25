@@ -198,7 +198,7 @@ movies %>%
             mean_director = mean(gross),
             median_director = median(gross),
             std_director = sd(gross)) %>% 
-  arrange(desc(gross_director)) %>% 
+  arrange(desc(sum_gross_director)) %>% 
   head(15)
 
 ```
@@ -566,13 +566,186 @@ hr_cleaned <- hr_dataset %>%
 Produce a one-page summary describing this dataset. Here is a non-exhaustive list of questions:
 
 1. How often do people leave the company (`attrition`)
+```{r attrition, message=FALSE, warning=FALSE}
+
+hr_cleaned %>% 
+  filter(attrition == "Yes") %>% 
+  summarise(mean_until_attrition = mean(years_at_company, na.rm = TRUE))
+
+```
+> Employees leave the firm after 5.13 years on average
+
+
 1. How are `age`, `years_at_company`, `monthly_income` and `years_since_last_promotion` distributed? can you roughly guess which of these variables is closer to Normal just by looking at summary statistics? 
+
+```{r summarise_hr}
+
+summarise_age <-
+  hr_cleaned %>% 
+  summarise(stat = "Age",
+            mean_stat = mean(age),
+            median_stat= median(age),
+            std_stat = sd(age),
+            min_stat = min(age),
+            max_stat = max(age)) 
+  
+summarise_years <-
+  hr_cleaned %>% 
+  summarise(stat = "Years at Company",
+            mean_stat = mean(years_at_company),
+            median_stat= median(years_at_company),
+            std_stat = sd(years_at_company),
+            min_stat = min(years_at_company),
+            max_stat = max(years_at_company))
+
+summarise_income <-
+  hr_cleaned %>% 
+  summarise(stat = "Monthly Income",
+            mean_stat = mean(monthly_income),
+            median_stat= median(monthly_income),
+            std_stat = sd(monthly_income),
+            min_stat = min(monthly_income),
+            max_stat = max(monthly_income))
+
+summarise_promotion <-
+  hr_cleaned %>% 
+  summarise(stat = "Years since last Promotion",
+            mean_stat = mean(years_since_last_promotion),
+            median_stat= median(years_since_last_promotion),
+            std_stat = sd(years_since_last_promotion),
+            min_stat = min(years_since_last_promotion),
+            max_stat = max(years_since_last_promotion))
+
+all_stats_summarise <- bind_rows(summarise_age,
+                                 summarise_years,
+                                 summarise_income,
+                                 summarise_promotion)
+
+all_stats_summarise
+
+```
+> 
+- Since the median and mean of Age are very similar we can say that it is very likely that this statistic is normally distributed. Furthermore, the mean seems to lie relatively in the middle to the min and max statistic.
+- Years at company seems to be right-skewed, since the mean is above the median and sits closer to the min than to the max.
+- Monthly income seems to be right-skewed, since the mean is above the median and sits closer to the min than to the max.
+- Years since last Promotion also seems to be right-skewed, since the mean is above the median and sits closer to the min than to the max.
+
 1. How are `job_satisfaction` and `work_life_balance` distributed? Don't just report counts, but express categories as % of total
+
+```{r satisfaction_balance, message=FALSE, warning=FALSE}
+
+distr_satisf <- hr_cleaned %>% 
+  select(job_satisfaction) %>% 
+  count(job_satisfaction) %>% 
+  mutate(freq = n / sum(n)) %>% 
+  arrange(match(job_satisfaction, c("Very High","High","Medium","Low"))) %>% 
+  rename(count = n)
+
+distr_balance <- hr_cleaned %>% 
+  select(work_life_balance) %>% 
+  count(work_life_balance) %>% 
+  mutate(freq = n / sum(n)) %>% 
+  arrange(match(work_life_balance,c("Best","Better","Good","Bad"))) %>% 
+  rename(count = n)
+  
+distr_satisf
+distr_balance
+
+```
+
+
+
 1. Is there any relationship between monthly income and education? Monthly income and gender?
+```{r income_education, message=FALSE, warning=FALSE}
+
+ggplot(hr_cleaned, aes(x = reorder(education, monthly_income, FUN = mean), y = monthly_income)) + # Boxplots are ordered by mean monthly income. This provides additional information about the data as median income and inter-quartile ranges are already graphically demonstrated.
+  geom_boxplot() +
+    labs(
+      title = "Income Distribution by Education Level",
+      x = "Education Level",
+      y = "Monthly Income"
+  )
+
+ggplot(hr_cleaned, aes(x = reorder(gender, monthly_income, FUN = mean), y = monthly_income)) + 
+  geom_boxplot() +
+  labs(
+    title = "Income Distribution by Gender",
+    x = "Gender",
+    y = "Monthly Income"
+  )
+```
+
+# On overall, there is a positive correlation between income and education level. This suggests that the higher the level of education, the higher the monthly income. Meanwhile, on overall there is also a relationship between income and gender. Males have a lower mean, median, 25-p
+
 1. Plot a boxplot of income vs job role. Make sure the highest-paid job roles appear first
+
+```{r box_income_role, message=FALSE, warning=FALSE}
+ggplot(hr_cleaned, aes(y = reorder(job_role, monthly_income, FUN = mean), x = monthly_income)) + 
+  geom_boxplot() +
+  labs(
+    title = "Income Distribution by Job Role",
+    y = "Role",
+    x = "Monthly Income"
+  )
+  
+```
+
 1. Calculate and plot a bar chart of the mean (or median?) income by education level.
+
+```{r bar_education, message=FALSE, warning=FALSE}
+hr_cleaned %>%
+  group_by(education) %>%
+  summarise(mean_income = mean(monthly_income)) %>%
+  ggplot(aes(x = reorder(education, mean_income, FUN = mean), y = mean_income)) +
+  geom_col() +
+  labs(
+    title = "Mean Income by Education Level",
+    y = "Mean Income",
+    x = "Education Level")
+```
+
 1. Plot the distribution of income by education level. Use a facet_wrap and a theme from `ggthemes`
+```{r distr_income_education, message=FALSE, warning=FALSE}
+
+hr_cleaned %>% 
+  arrange(match(education,c("Doctor","Master","Bachelor","College","Below College"))) %>%
+  ggplot(aes(x = monthly_income, y = education, color = performance_rating)) +
+  geom_point() +
+  facet_wrap(vars(gender)) +
+  labs(
+    title = "Income vs Education - Split by gender and performance rating",
+    x = "Monthly Income",
+    y = "Education Level"
+  )
+
+```
+
+
 1. Plot income vs age, faceted by `job_role`
+```{r job_role, message=FALSE, warning=FALSE}
+
+# find job role with the highest mean salary
+prof_role <- hr_cleaned %>% 
+  group_by(job_role) %>% 
+  summarise(mean_income = mean(monthly_income)) %>% 
+  arrange(mean_income)
+
+# covert list of best paid job roles into a vector
+order_role <- pull(prof_role, job_role)
+
+# set factor of job role to mean monthly income so that upcoming facet wrap is ordered correctly
+inc_age_by_role <- hr_cleaned %>% 
+  select(monthly_income, age, job_role) %>%
+  mutate(job_role = fct_reorder(job_role, monthly_income, .fun = mean)) 
+  
+ggplot(inc_age_by_role, aes(x = monthly_income, y = age)) +
+  geom_point() + 
+  facet_wrap(vars(job_role) )
+
+
+
+
+```
 
 
 # Challenge 1: Replicating a chart
