@@ -244,7 +244,7 @@ ggplot(movies, aes(x= gross, y= cast_facebook_likes)) +
 
 ```
 
-  - Examine the relationship between `gross` and `budget`. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.
+Examine the relationship between `gross` and `budget`. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.
 
 ```{r, gross_on_budget}
 
@@ -255,9 +255,9 @@ ggplot(movies, aes(x= gross, y= budget)) +
     x = "Gross Earnings",
     y = "Budget")
 
-# A movies budget could have the potential to be a good predictor for movie success, as only good screenplays would be allowed to spend a lot on actually filming and marketing the movie.
-
 ```
+A movies budget could have the potential to be a good predictor for movie success, as only good screenplays would be allowed to spend a lot on actually filming and marketing the movie.
+  
   
   - Examine the relationship between `gross` and `rating`. Produce a scatterplot, faceted by `genre` and discuss whether IMDB ratings are likely to be a good predictor of how much money a movie will make at the box office. Is there anything strange in this dataset?
 
@@ -268,12 +268,11 @@ ggplot(movies, aes(x= rating, y= gross)) +
   facet_wrap(vars(genre)) +
   labs(
     title = "Scatterplots of gross earnings on ratings by genre",
-    x = "Gross Earnings",
-    y = "IMDB Rating")
-
-# IMDB ratings do seem to generally be a good predictor of the money a movie will make. Especially within the genres where we have a lot of data we can see a positive correlation. There are some stranger genres where this doesn't hold to be true however. Documentaries and Fantasy movies don't show a correlation, so their generated revenues don't seem to be related to ratings.
+    y = "Gross Earnings",
+    x = "IMDB Rating")
 
 ```
+IMDB ratings do seem to generally be a good predictor of the money a movie will make. Especially within the genres where we have a lot of data we can see a positive correlation. There are some stranger genres where this doesn't hold to be true however. Documentaries and Fantasy movies don't show a correlation, so their generated revenues don't seem to be related to ratings.
 
 
 # Returns of financial stocks
@@ -406,8 +405,9 @@ Create a dataframe and assign it to a new object, where you summarise monthly re
 
 ```{r summarise_monthly_returns}
 
-monthly_returns_07_to_20 <-
+monthly_returns_17_to_20 <-
   myStocks_returns_monthly %>% 
+  filter(date  >= as.Date("2017-01-01")) %>% 
   group_by(symbol) %>% 
   summarise(mean_monthly_returns = mean(monthly_returns),
             median_monthly_returns = median(monthly_returns),
@@ -416,7 +416,7 @@ monthly_returns_07_to_20 <-
             max_monthly_returns = max(monthly_returns)) %>% 
   arrange(desc(mean_monthly_returns))   # Arrange for mean return to have a better overview
 
-monthly_returns_07_to_20 # Print table
+monthly_returns_17_to_20 # Print table
 
 ```
 
@@ -441,7 +441,7 @@ What can you infer from this plot? Which stock is the riskiest? The least risky?
 
 > TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.
 
-# DJIA Stock Returns - Monthly Returns between 2007 and 2020
+# DJIA Stock Returns - Monthly Returns between 2017 and 2020
 The density plots show us two things in general:
 1. In which region do the most common returns lie (i.e. where is the mean)
 2. How widely spread are the returns (i.e. what is the variance)
@@ -456,9 +456,9 @@ Finally, produce a plot that shows the expected monthly return (mean) of a stock
 
 ```{r risk_return_plot}
 
-monthly_returns_07_to_20
+monthly_returns_17_to_20
 
-ggplot(monthly_returns_07_to_20, aes(x = std_monthly_returns, y = mean_monthly_returns)) + 
+ggplot(monthly_returns_17_to_20, aes(x = std_monthly_returns, y = mean_monthly_returns)) + 
   geom_point() +
   geom_text_repel(aes(label = symbol),
                   size = 2.5) +
@@ -477,7 +477,7 @@ What can you infer from this plot? Are there any stocks which, while being riski
 > TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.
 
 # Risk vs Return in DJIA
-In finance there is a general expectation of returns being related to risk. In that sense we would be expecting to see a positive correlation between the stocks mean returns and return standard deviation. This tendency can be clearly seen in our data set as well. 
+In finance there is a general expectation of returns being related to risk. In that sense we would be expecting to see a positive correlation between the stocks mean returns and return standard deviation. This tendency can not be seen in our data set from 2017 to 2020, however we did find the said positive correlation in the entire data set from 07 to 20. 
 
 We added a regression line onto our plot to see the average relationship between risk and return in our sample. This helps us to decide which stock can generally be seen to be too risky whilst not providing enough returns or which stocks seem to have performed very well, producing high returns with less risk involved. The line seperates these two categories:
 - Above our regression line lie the stocks that outperform in terms of risk vs. return
@@ -486,24 +486,24 @@ We added a regression line onto our plot to see the average relationship between
 Notably strong stocks (being less risky than would have been expected for the achieved returns) are:
 1. Apple (AAPL)
 2. Salesforce (CRM)
-3. Visa (V)
+3. Microsoft (MSFT)
 
 Notably weak stocks (being more risky than would have been expected for the achieved returns) are:
-1. Dow Inc (DOW)
-2. Cisco (CSCO)
-3. Intel (INTC)
+1. Walgreens (WBA)
+2. Chevron (CVX)
+3. IBM (IBM)
 
-If one had to choose only one stock with the above information it would be one of Apple, Salesforce or Visa which outperform the remaining sample in terms of achieved returns for taken risk.
-
-
-
-# On your own: IBM HR Analytics
+If one had to choose only one stock with the above information it would be one of Apple, Salesforce or Microsoft which outperform the remaining sample in terms of achieved returns for taken risk.
 
 
-For this task, you will analyse a data set on Human Resoruce Analytics. The [IBM HR Analytics Employee Attrition & Performance data set](https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset) is a fictional data set created by IBM data scientists.  Among other things, the data set includes employees' income, their distance from work, their position in the company, their level of education, etc. A full description can be found on the website.
+
+# IBM HR Analytics
 
 
-First let us load the data
+We will analyse a data set on Human Resoruce Analytics. The [IBM HR Analytics Employee Attrition & Performance data set](https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset) is a fictional data set created by IBM data scientists.  Among other things, the data set includes employees' income, their distance from work, their position in the company, their level of education, etc. A full description can be found on the website.
+
+
+## Cleaning the data
 
 ```{r}
 
@@ -563,9 +563,7 @@ hr_cleaned <- hr_dataset %>%
 
 ```
 
-Produce a one-page summary describing this dataset. Here is a non-exhaustive list of questions:
-
-1. How often do people leave the company (`attrition`)
+## How often do people leave the company (`attrition`)
 ```{r attrition, message=FALSE, warning=FALSE}
 
 hr_cleaned %>% 
@@ -573,10 +571,10 @@ hr_cleaned %>%
   summarise(mean_until_attrition = mean(years_at_company, na.rm = TRUE))
 
 ```
-> Employees leave the firm after 5.13 years on average
+Employees of the company leave the firm after 5.13 years on average.
 
 
-1. How are `age`, `years_at_company`, `monthly_income` and `years_since_last_promotion` distributed? can you roughly guess which of these variables is closer to Normal just by looking at summary statistics? 
+## How are `age`, `years_at_company`, `monthly_income` and `years_since_last_promotion` distributed? 
 
 ```{r summarise_hr}
 
@@ -624,13 +622,13 @@ all_stats_summarise <- bind_rows(summarise_age,
 all_stats_summarise
 
 ```
-> 
+From our analysis we can infer the approximate distribution of our four variables `age`, `years_at_company`, `monthly_income` and `years_since_last_promotion`. A normal distribution can among other things be characterised by its mean and median being close to identical and both lying in the middle of the range between the maximum and minimum value. We can therefore summarise the following findings:
 - Since the median and mean of Age are very similar we can say that it is very likely that this statistic is normally distributed. Furthermore, the mean seems to lie relatively in the middle to the min and max statistic.
 - Years at company seems to be right-skewed, since the mean is above the median and sits closer to the min than to the max.
 - Monthly income seems to be right-skewed, since the mean is above the median and sits closer to the min than to the max.
 - Years since last Promotion also seems to be right-skewed, since the mean is above the median and sits closer to the min than to the max.
 
-1. How are `job_satisfaction` and `work_life_balance` distributed? Don't just report counts, but express categories as % of total
+## How are `job_satisfaction` and `work_life_balance` distributed? 
 
 ```{r satisfaction_balance, message=FALSE, warning=FALSE}
 
@@ -652,10 +650,10 @@ distr_satisf
 distr_balance
 
 ```
+We can see that the job satisfaction and work life balance are not distributed similarly. Both have the majority of employees in the most positive categories, however for work life balance this share is slightly higher at around 70% compared to roughly 60% among job satisfaction. There is also a substantially higher share of employees who are dissatisfied with their job (20%) whereas only around 5% claim to have a bad work life balance. Whereas it is often discussed that work life balance is a main driver of job satisfaction in businesses, this indicates that it is not be the only driver.
 
 
-
-1. Is there any relationship between monthly income and education? Monthly income and gender?
+## Is there any relationship between monthly income and education? Monthly income and gender?
 ```{r income_education, message=FALSE, warning=FALSE}
 
 ggplot(hr_cleaned, aes(x = reorder(education, monthly_income, FUN = mean), y = monthly_income)) + # Boxplots are ordered by mean monthly income. This provides additional information about the data as median income and inter-quartile ranges are already graphically demonstrated.
@@ -675,9 +673,11 @@ ggplot(hr_cleaned, aes(x = reorder(gender, monthly_income, FUN = mean), y = mont
   )
 ```
 
-# On overall, there is a positive correlation between income and education level. This suggests that the higher the level of education, the higher the monthly income. Meanwhile, on overall there is also a relationship between income and gender. Males have a lower mean, median, 25-p
+Overall, there seems to be a positive correlation between income and education level. This suggests that the higher the level of education, the higher the monthly income on average. We can also notice that the spread of income levels within the different educational levels increases with increased education. This could be interpreted so that a higher level of education opens up higher salary levels which might have been impossible to achive with a lower level of education, however that it doesnt guarantee these higher levels.
 
-1. Plot a boxplot of income vs job role. Make sure the highest-paid job roles appear first
+Meanwhile, there  also seems to be a relationship between income and gender. Males have a lower mean, median, 25-p & 75-p than females, this difference is however minimal. Interestingly, males do also have a higher number of outliers on the top end of the spectrum.
+
+## Boxplot of income vs job role
 
 ```{r box_income_role, message=FALSE, warning=FALSE}
 ggplot(hr_cleaned, aes(y = reorder(job_role, monthly_income, FUN = mean), x = monthly_income)) + 
@@ -690,7 +690,7 @@ ggplot(hr_cleaned, aes(y = reorder(job_role, monthly_income, FUN = mean), x = mo
   
 ```
 
-1. Calculate and plot a bar chart of the mean (or median?) income by education level.
+## Calculate and plot a bar chart of the mean (or median?) income by education level.
 
 ```{r bar_education, message=FALSE, warning=FALSE}
 hr_cleaned %>%
@@ -704,24 +704,29 @@ hr_cleaned %>%
     x = "Education Level")
 ```
 
-1. Plot the distribution of income by education level. Use a facet_wrap and a theme from `ggthemes`
+Due to our previously conducted analysis we have reason to believe that education level has a bigger effect on overall salary range rather than actual salary. Plotting the median income would not show us these outliers that highlight career opportunities at the top end of the spectrum so we decided to plot the mean salary by education. We can see that this increases with educational level as expected.
+
+## Plot the distribution of income by education level by performance rating
 ```{r distr_income_education, message=FALSE, warning=FALSE}
 
-hr_cleaned %>% 
-  arrange(match(education,c("Doctor","Master","Bachelor","College","Below College"))) %>%
-  ggplot(aes(x = monthly_income, y = education, color = performance_rating)) +
-  geom_point() +
-  facet_wrap(vars(gender)) +
+hr_cleaned %>%
+  ggplot(aes(y = reorder(education, monthly_income, FUN = mean), x = monthly_income)) +
+  geom_boxplot() +
+  facet_wrap(vars(performance_rating)) +
+  theme_economist() + 
+  scale_fill_economist() +
   labs(
-    title = "Income vs Education - Split by gender and performance rating",
+    title = "Income vs Education - Split by performance rating",
     x = "Monthly Income",
     y = "Education Level"
   )
 
 ```
 
+Again we can see our previously discovered tendency for education to allow for a greater range of salaries. In the above boxplots we can again see that a better performance ("Outstanding") tends to lead to a greater salary spread and slightly higher mean salary for better educated employees. This does not hold perfectly true but there is a general tendency from below college ducation to having a doctor. This indicates that good work especially pays off when you have the right educational level to step up in the company.
 
-1. Plot income vs age, faceted by `job_role`
+
+## Plot income vs age, faceted by `job_role`
 ```{r job_role, message=FALSE, warning=FALSE}
 
 # find job role with the highest mean salary
@@ -730,7 +735,7 @@ prof_role <- hr_cleaned %>%
   summarise(mean_income = mean(monthly_income)) %>% 
   arrange(mean_income)
 
-# covert list of best paid job roles into a vector
+# convert list of best paid job roles into a vector
 order_role <- pull(prof_role, job_role)
 
 # set factor of job role to mean monthly income so that upcoming facet wrap is ordered correctly
@@ -740,13 +745,17 @@ inc_age_by_role <- hr_cleaned %>%
   
 ggplot(inc_age_by_role, aes(x = monthly_income, y = age)) +
   geom_point() + 
-  facet_wrap(vars(job_role) )
-
-
-
+  facet_wrap(vars(job_role)) +
+  theme_economist() +
+  labs(
+    title = "Income vs Age - Split by role",
+    x = "Monthly Income",
+    y = "Age"
+  )
 
 ```
 
+We can see that the tendency of age relating to monthly income increases with higher earning job roles. In low paying roles such as Sales Representative the age of employee does not seem to be driving the monthly income they receive. On the other end of the spectrum, the Manager roles, we can see that there is a tendency of older employees to earn more.
 
 # Challenge 1: Replicating a chart
 
@@ -754,6 +763,36 @@ The purpose of this exercise is to make a publication-ready plot using your `dpl
 
 ```{r challenge1, echo=FALSE, out.width="90%"}
 knitr::include_graphics(here::here("images", "figure3.jpeg"), error = FALSE)
+```
+
+```{r challenge1_sol, echo=FALSE, out.width="50%"}
+cdc_males <- read_csv("data/CDC_Males.csv")
+
+correl_cdc <- cdc_males %>% 
+  filter(type.fac == "Firearm-related") %>% 
+  summarise(cor(adjusted.suicide.White, adjusted.homicide.White))
+
+correl_cdc
+
+cdc_males %>% 
+  filter(type.fac == "Firearm-related") %>% 
+  ggplot(aes(x = adjusted.suicide.White, y = adjusted.homicide.White, colour = gun.house.prev.category)) +
+  geom_point(aes(size = average.pop.white)) + 
+  scale_size_area(breaks = c(500000, 1500000, 3000000, 7000000), 
+                  labels = c('500k', '1.5m', '3m', '7m'), max_size = 14) +
+  scale_color_manual(values = c("10.2%-19.9%" = "#fef0d9", "20.0%-34.9%" = "#fdcc8a", "35.0%-44.9%" = "#fc8d59", "45.0%-65.5%" = "#d7301f")) +
+  geom_text_repel(aes(label = ST),
+                  size = 2.5,
+                  color = "Black") +
+  theme_light() +
+  labs(
+    title = "Annual rates of firearm homicide and suicide among white men, by state, household firearm ownership",
+    x = "White Suicide Rate (per 100000 per Year)",
+    y = "White Homicide Rate (per 100 000 per Year)",
+    size = "White Population",
+    colour = "Gun Ownership"
+  )
+
 ```
 
 
@@ -808,9 +847,9 @@ There is a lot of explanatory text, comments, etc. You do not need these, so del
 
 # Details
 
-- Who did you collaborate with: TYPE NAMES HERE
-- Approximately how much time did you spend on this problem set: ANSWER HERE
-- What, if anything, gave you the most trouble: ANSWER HERE
+- Who did you collaborate with: Dung Tran, Salman Abdullah, Andjela Bozinovic, Xiwen Wang
+- Approximately how much time did you spend on this problem set: 8h
+- What, if anything, gave you the most trouble: n/a
 
 
 **Please seek out help when you need it,** and remember the [15-minute rule](https://mam2021.netlify.app/syllabus/#the-15-minute-rule){target=_blank}. You know enough R (and have enough examples of code from class and your readings) to be able to do this. If you get stuck, ask for help from others, post a question on Slack-- and remember that I am here to help too!  
