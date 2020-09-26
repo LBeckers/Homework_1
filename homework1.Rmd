@@ -766,29 +766,37 @@ knitr::include_graphics(here::here("images", "figure3.jpeg"), error = FALSE)
 ```
 
 ```{r challenge1_sol, echo=FALSE, out.width="50%"}
+# Read csv file and import into dataframe
 cdc_males <- read_csv("data/CDC_Males.csv")
 
+# Calculate Spearman correlation coefficient
 correl_cdc <- cdc_males %>% 
   filter(type.fac == "Firearm-related") %>% 
-  summarise(cor(adjusted.suicide.White, adjusted.homicide.White))
+  drop_na(adjusted.suicide.White, adjusted.homicide.White) %>% 
+  summarise(correl = cor(adjusted.suicide.White, adjusted.homicide.White, method = "spearman"))
 
-correl_cdc
-
+# Create Scatterplot
 cdc_males %>% 
   filter(type.fac == "Firearm-related") %>% 
-  ggplot(aes(x = adjusted.suicide.White, y = adjusted.homicide.White, colour = gun.house.prev.category)) +
-  geom_point(aes(size = average.pop.white)) + 
-  scale_size_area(breaks = c(500000, 1500000, 3000000, 7000000), 
+  ggplot(aes(x = adjusted.suicide.White, y = adjusted.homicide.White, colour = gun.house.prev.category, rm.na = TRUE)) +
+  geom_point(aes(size = average.pop.white)) + # Make datapoint size dependent on average white population size
+  scale_size_area(breaks = c(500000, 1500000, 3000000, 7000000), # Specify category breaks for datapoint size
                   labels = c('500k', '1.5m', '3m', '7m'), max_size = 14) +
-  scale_color_manual(values = c("10.2%-19.9%" = "#fef0d9", "20.0%-34.9%" = "#fdcc8a", "35.0%-44.9%" = "#fc8d59", "45.0%-65.5%" = "#d7301f")) +
-  geom_text_repel(aes(label = ST),
-                  size = 2.5,
+  scale_color_manual(values = c("10.2%-19.9%" = "#fef0d9", # specify colours of range buckets
+                                "20.0%-34.9%" = "#fdcc8a",
+                                "35.0%-44.9%" = "#fc8d59",
+                                "45.0%-65.5%" = "#d7301f")) +
+  geom_text_repel(aes(label = ST), # Add state labels to datapoints
+                  size = 5,
                   color = "Black") +
+  annotate(x = 25, y = 0.5, # Add correlation to graph
+         label = paste("Spearman Rho: ", round(correl_cdc, 2)), 
+         geom="text", size=5) +
   theme_light() +
   labs(
     title = "Annual rates of firearm homicide and suicide among white men, by state, household firearm ownership",
-    x = "White Suicide Rate (per 100000 per Year)",
-    y = "White Homicide Rate (per 100 000 per Year)",
+    x = "White Suicide Rate (per 100,000 per Year)",
+    y = "White Homicide Rate (per 100,000 per Year)",
     size = "White Population",
     colour = "Gun Ownership"
   )
