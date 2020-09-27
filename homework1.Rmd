@@ -70,12 +70,10 @@ What are the variable types? Any missing values we should worry about?
 ```{r glimpse_skim_data}
 glimpse(drinks)
 skim(drinks)
-
-
 ```
+There doent seem to be any missing values
 
-
-Make a plot that shows the top 25 beer consuming countries
+## Make a plot that shows the top 25 beer consuming countries
 
 ```{r beer_plot}
 beer_plot <- drinks %>% 
@@ -92,7 +90,7 @@ ggplot(beer_plot, aes(x= beer_servings, y = reorder(country, beer_servings))) +
   )
 ```
 
-Make a plot that shows the top 25 wine consuming countries
+## Make a plot that shows the top 25 wine consuming countries
 
 ```{r wine_plot}
 
@@ -110,7 +108,7 @@ ggplot(wine_plot, aes(x= wine_servings, y = reorder(country, wine_servings))) +
   )
 ```
 
-Finally, make a plot that shows the top 25 spirit consuming countries
+## Finally, make a plot that shows the top 25 spirit consuming countries
 ```{r spirit_plot}
 
 spirit_plot <- drinks %>% 
@@ -131,6 +129,12 @@ ggplot(spirit_plot, aes(x= spirit_servings, y = reorder(country, spirit_servings
 What can you infer from these plots? Don't just explain what's in the graph, but speculate or tell a short story (1-2 paragraphs max).
 
 > TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.
+
+The top consuming countries of one kind of beverage are generally not among the the top countries for a second beverage. This means most countries have one favourite beverage that brings them on top of the ranking. There also seems to be a regional and cultural division amongst the beverages:
+
+- Beer is being consumed in Central and Northern Europe. Countries like Germany and the Czech Republic are amongst the top beer consuming countries. Namibia, a former German colony is number one. Surprisingly, Gabon a former French colony is number 3.
+- Wine is consumed in more southern European countries like France and Portugal. However, some more surprising countries like Denmark are also within the top countries.
+- Spirits are being consumed by more eastern European countries like Russia. However also small island states drink a lot of spirits, potentially due to a lot of tourists enjoying the one or the other Mojito!
 
 # Analysis of movies- IMDB dataset
 
@@ -161,9 +165,9 @@ Besides the obvious variables of `title`, `genre`, `director`, `year`, and `dura
 
 skim(movies)
 
-# There are no missing values, there are however duplicates
 
 ```
+There are no missing values, there are however duplicates
 
 - Produce a table with the count of movies by genre, ranked in descending order
 ```{r, count_movies}
@@ -216,6 +220,8 @@ df_ratings <- movies %>%
             std_rating = sd(rating),
             min_rating = min(rating),
             max_rating = max(rating))
+
+df_ratings
  
 ggplot(df_ratings, aes(x = mean_rating)) +
   geom_histogram(color = "black", fill = "blue") +
@@ -240,9 +246,9 @@ ggplot(movies, aes(x= gross, y= cast_facebook_likes)) +
     x = "Gross Earnings",
     y = "Cast's Facebook Likes")
 
-# Facebook likes will most likely not be a good predictor for box office performance. One reason for this could be that the cast (if new or unknown) would start getting facebook likes after a successful movie
-
 ```
+Facebook likes will most likely not be a good predictor for box office performance. One reason for this could be that the cast (if new or unknown) would start getting facebook likes after a successful movie
+
 
 Examine the relationship between `gross` and `budget`. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.
 
@@ -441,8 +447,9 @@ What can you infer from this plot? Which stock is the riskiest? The least risky?
 
 > TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.
 
-# DJIA Stock Returns - Monthly Returns between 2017 and 2020
+## DJIA Stock Returns - Monthly Returns between 2017 and 2020
 The density plots show us two things in general:
+
 1. In which region do the most common returns lie (i.e. where is the mean)
 2. How widely spread are the returns (i.e. what is the variance)
 
@@ -476,19 +483,22 @@ What can you infer from this plot? Are there any stocks which, while being riski
 
 > TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.
 
-# Risk vs Return in DJIA
+## Risk vs Return in DJIA
 In finance there is a general expectation of returns being related to risk. In that sense we would be expecting to see a positive correlation between the stocks mean returns and return standard deviation. This tendency can not be seen in our data set from 2017 to 2020, however we did find the said positive correlation in the entire data set from 07 to 20. 
 
 We added a regression line onto our plot to see the average relationship between risk and return in our sample. This helps us to decide which stock can generally be seen to be too risky whilst not providing enough returns or which stocks seem to have performed very well, producing high returns with less risk involved. The line seperates these two categories:
+
 - Above our regression line lie the stocks that outperform in terms of risk vs. return
 - Below our regression line lie the stocks that underperform in terms of risk vs return
 
 Notably strong stocks (being less risky than would have been expected for the achieved returns) are:
+
 1. Apple (AAPL)
 2. Salesforce (CRM)
 3. Microsoft (MSFT)
 
 Notably weak stocks (being more risky than would have been expected for the achieved returns) are:
+
 1. Walgreens (WBA)
 2. Chevron (CVX)
 3. IBM (IBM)
@@ -622,7 +632,9 @@ all_stats_summarise <- bind_rows(summarise_age,
 all_stats_summarise
 
 ```
+
 From our analysis we can infer the approximate distribution of our four variables `age`, `years_at_company`, `monthly_income` and `years_since_last_promotion`. A normal distribution can among other things be characterised by its mean and median being close to identical and both lying in the middle of the range between the maximum and minimum value. We can therefore summarise the following findings:
+
 - Since the median and mean of Age are very similar we can say that it is very likely that this statistic is normally distributed. Furthermore, the mean seems to lie relatively in the middle to the min and max statistic.
 - Years at company seems to be right-skewed, since the mean is above the median and sits closer to the min than to the max.
 - Monthly income seems to be right-skewed, since the mean is above the median and sits closer to the min than to the max.
@@ -689,6 +701,8 @@ ggplot(hr_cleaned, aes(y = reorder(job_role, monthly_income, FUN = mean), x = mo
   )
   
 ```
+The above highlights which roles are being paid most. They also show that there is a tendency for higher paid roles to have a more spread salary distribution.
+
 
 ## Calculate and plot a bar chart of the mean (or median?) income by education level.
 
@@ -765,7 +779,18 @@ The purpose of this exercise is to make a publication-ready plot using your `dpl
 knitr::include_graphics(here::here("images", "figure3.jpeg"), error = FALSE)
 ```
 
-```{r challenge1_sol, echo=FALSE, out.width="50%"}
+
+Don't worry about replicating it exactly, try and see how far you can get. You're encouraged to work together if you want to and exchange tips/tricks you figured out. 
+
+You may find these helpful:
+
+- https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html
+- http://colorbrewer2.org
+
+
+
+```{r, echo=FALSE, out.width="90%"}
+
 # Read csv file and import into dataframe
 cdc_males <- read_csv("data/CDC_Males.csv")
 
@@ -800,21 +825,6 @@ cdc_males %>%
     size = "White Population",
     colour = "Gun Ownership"
   )
-
-```
-
-
-Don't worry about replicating it exactly, try and see how far you can get. You're encouraged to work together if you want to and exchange tips/tricks you figured out. 
-
-You may find these helpful:
-
-- https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html
-- http://colorbrewer2.org
-
-
-
-```{r, echo=FALSE}
-# Replicate Figure 3
 
 ```
 
