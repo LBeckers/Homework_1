@@ -801,7 +801,7 @@ correl_cdc <- cdc_males %>%
   summarise(correl = cor(adjusted.suicide.White, adjusted.homicide.White, method = "spearman"))
 
 # Create Scatterplot
-cdc_males %>% 
+cdc_males[!is.na(cdc_males$gun.house.prev.category),] %>% # get ris of all NAs in gun.house.prev.category
   filter(type.fac == "Firearm-related") %>% 
   ggplot(aes(x = adjusted.suicide.White, y = adjusted.homicide.White, colour = gun.house.prev.category, rm.na = TRUE)) +
   geom_point(aes(size = average.pop.white)) + # Make datapoint size dependent on average white population size
@@ -882,8 +882,13 @@ ggplot(Contribution_plot, aes(x = total_in_primary_city, y =  reorder_within(pri
     x = "Amount raised",
     y = element_blank()
   ) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
-         strip.background = element_rect(color = "black", size = 1))
+   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
+         strip.background = element_rect(color = "black", size = 1),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.minor = element_line(colour = "grey", size = 0.5),
+        panel.grid.major = element_line(colour = "grey", size = 0.5)) +
+  scale_fill_manual(values = c("Clinton, Hillary Rodham" = "#1C49C3",
+                                "Trump, Donald J." = "#D80D22"))
 
 ```
 
