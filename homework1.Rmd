@@ -789,7 +789,7 @@ You may find these helpful:
 
 
 
-```{r, echo=FALSE, out.width="90%"}
+```{r}
 
 # Read csv file and import into dataframe
 cdc_males <- read_csv("data/CDC_Males.csv")
@@ -853,6 +853,37 @@ While this is ok, what if one asked you to create the same plot for the top 10 c
 # Make sure you use vroom() as it is significantly faster than read.csv()
 CA_contributors_2016 <- vroom::vroom(here::here("data","CA_contributors_2016.csv"))
 
+zipcode <- vroom("http://www.uszipcodelist.com/zip_code_database.csv")
+
+library(tidytext)
+
+cleaned_state_data <- zipcode %>%
+  select(zip, primary_city) %>%
+  mutate_at("zip", as.numeric) # Make sure zip are numeric values
+
+Contribution_plot <- left_join(CA_contributors_2016, cleaned_state_data, by = c("zip" = "zip")) %>%
+  select(cand_nm, contb_receipt_amt, zip, primary_city) %>%
+  filter(cand_nm %in% c("Trump, Donald J.", "Clinton, Hillary Rodham")) %>% # filter for zip codes where DT OR HC received contributions
+  group_by(primary_city, cand_nm) %>%
+  summarise(total_in_primary_city = sum(contb_receipt_amt)) %>%
+  arrange(desc(total_in_primary_city)) %>%
+  ungroup %>%
+  group_by(cand_nm) %>%
+  slice_head(n = 10) 
+
+# Create column plot where we reorder cities for both candidates according to highest total amounts with reorder_within()
+ggplot(Contribution_plot, aes(x = total_in_primary_city, y =  reorder_within(primary_city, total_in_primary_city, cand_nm), fill = cand_nm)) + 
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~cand_nm, scales = "free") +
+  scale_y_reordered() + # clean the y-axis 
+  scale_x_continuous(labels=scales::dollar_format()) + # clean the x-axis
+  labs(
+    title = "Where did candidates raise most money?",
+    x = "Amount raised",
+    y = element_blank()
+  ) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
+         strip.background = element_rect(color = "black", size = 1))
 
 ```
 
